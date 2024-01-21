@@ -1,0 +1,81 @@
+FROM continuumio/anaconda3
+COPY . /usr/app/
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN pip install -r requirements.txt
+CMD python app.py
+
+
+Archive 1:
+FROM python:3.7.13-slim-buster
+COPY . /usr/app/
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install --no-install-recommends
+RUN pip install -r requirements.txt
+CMD python app.py
+
+or 
+
+FROM python:3.7.13-slim-buster
+COPY . /usr/app/
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN apt-get update -y && apt-get upgrade -y && apt-get install --no-install-recommends && pip install -r requirements.txt
+CMD python app.py
+
+Archive 2::
+
+FROM registry.access.redhat.com/ubi8/python-38
+COPY . /usr/app
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN pip install -r requirements.txt
+CMD python app.py
+
+Archive 3:: gETTING ACCESS ISSUE
+ > [5/5] RUN chmod +x /usr/app/logs:
+#8 1.362 chmod: changing permissions of '/usr/app/logs': Operation not permitted
+FROM registry.access.redhat.com/ubi8/python-38
+COPY . /usr/app
+EXPOSE 5000
+WORKDIR /usr/app
+RUN pip install -r requirements.txt
+RUN chmod +x /usr/app/logs
+CMD python app.py
+
+
+Archive 3::
+FROM registry.access.redhat.com/ubi8/python-38
+COPY . /usr/app/
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN pip install -r requirements.txt
+CMD python app.py
+
+
+Archive 4:: 
+FROM registry.access.redhat.com/ubi8/python-38
+RUN addgroup --g 1024 groupcontainer
+RUN adduser -u 1024 -G groupcontainer -h /home/containeruser -D containeruser
+USER containeruser
+COPY --chown=containeruser:groupcontainer . /usr/app/
+EXPOSE 5000
+WORKDIR /usr/app/
+RUN pip install -r requirements.txt
+CMD python app.py
+
+Error::
+ => CANCELED [internal] load build context                                                                                                                                                                    2.2s
+ => => transferring context: 18.38MB                                                                                                                                                                          2.2s
+ => ERROR [2/6] RUN addgroup --g 1024 groupcontainer                                                                                                                                                          2.2s
+------
+ > [2/6] RUN addgroup --g 1024 groupcontainer:
+#5 2.028 /bin/sh: addgroup: command not found
+ => CANCELED [internal] load build context                                                                                                                                                                    2.2s
+ => => transferring context: 18.38MB                                                                                                                                                                          2.2s
+ => ERROR [2/6] RUN addgroup --g 1024 groupcontainer                                                                                                                                                          2.2s
+------
+ > [2/6] RUN addgroup --g 1024 groupcontainer:
+#5 2.028 /bin/sh: addgroup: command not found
